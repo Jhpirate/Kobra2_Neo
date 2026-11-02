@@ -37,6 +37,21 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
 
 The project uses [PlatformIO](https://platformio.org/). The easiest way to build is VS Code with the **Auto Build Marlin** extension.
 
+### Required: Anycubic's STM32 framework
+
+This firmware needs **Anycubic's modified `framework-arduinoststm32` (version 4.10900.200819)**, not the stock package PlatformIO downloads. A build against the stock framework compiles without errors, but it uses a generic board layout and the printer won't take it.
+
+Anycubic's version adds the `AC_TRI_F103RE` board variant (pin map, a linker script that places the firmware at `0x08009000`, stack and heap sizes). It also changes the ADC setup (DMA for temperature readings), flash write timing, and the SD card clock and timeouts.
+
+Install it by replacing the package folder:
+
+| OS | Location |
+|---|---|
+| Linux / macOS | `~/.platformio/packages/framework-arduinoststm32` |
+| Windows | `C:\Users\<you>\.platformio\packages\framework-arduinoststm32` |
+
+To confirm the right one is installed, check that the folder has a `variants/AC_TRI_F103RE` folder and that its `README.md` ends with `framework-arduinoststm32_kobra2_neo`.
+
 ### With Auto Build Marlin (recommended)
 
 1. Install [VS Code](https://code.visualstudio.com/).
@@ -109,7 +124,7 @@ Without `M73` the print runs normally, but the progress bar stays empty.
 | [`Marlin/src/gcode/stats/M75-M78.cpp`](Marlin/src/gcode/stats/M75-M78.cpp) | `M75`/`M76`/`M77` hooks for host prints |
 | [`Marlin/src/HAL/STM32/autoGetZoffset.h`](Marlin/src/HAL/STM32/autoGetZoffset.h) | Auto Z offset settings, including the purge option |
 | [`ini/stm32f1.ini`](ini/stm32f1.ini) | `ac_tri_f1` build environment |
-| [`buildroot/share/PlatformIO/variants/AC_TRI_F103RE`](buildroot/share/PlatformIO/variants/AC_TRI_F103RE) | Anycubic board variant: pin map, linker script at `0x9000`, stack and heap sizes. It's in the repo, so builds don't need it installed in PlatformIO. |
+| [`buildroot/share/PlatformIO/boards/ac_tri_f103re.json`](buildroot/share/PlatformIO/boards/ac_tri_f103re.json) | Board definition that selects the Anycubic `AC_TRI_F103RE` variant |
 
 ## Credits
 
