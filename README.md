@@ -39,7 +39,7 @@ The project uses [PlatformIO](https://platformio.org/). The easiest way to build
 
 ### Required: Anycubic's STM32 framework
 
-This firmware needs **Anycubic's modified `framework-arduinoststm32` (version 4.10900.200819)**, not the stock package PlatformIO downloads. A build against the stock framework compiles without errors, but it uses a generic board layout and the printer won't take it.
+This firmware needs **Anycubic's modified `framework-arduinoststm32` (version 4.10900.200819)**, not the stock package PlatformIO downloads. A build against the stock framework compiles without errors, but it uses a generic board layout and stock drivers that don't match the printer's hardware.
 
 Anycubic's version adds the `AC_TRI_F103RE` board variant (pin map, a linker script that places the firmware at `0x08009000`, stack and heap sizes). It also changes the ADC setup (DMA for temperature readings), flash write timing, and the SD card clock and timeouts.
 
@@ -90,6 +90,29 @@ The output is the same `.pio/build/ac_tri_f1/firmware.bin`.
 4. After flashing a new build, check the settings. Run auto-leveling and Z offset calibration again if anything looks off.
 
 To go back to stock, flash Anycubic's firmware the same way.
+
+### Copying from Linux
+
+By default Linux mounts FAT cards with `shortname=mixed`. With that option, a lowercase name like `firmware.bin` is saved as `FIRMWARE.BIN` plus an extra long-name entry. Windows saves it as one lowercase short name. The printer's bootloader only finds the Windows-style entry, so a `firmware.bin` copied from Linux is ignored and nothing flashes.
+
+Mount the card with `shortname=winnt` before copying:
+
+```sh
+udisksctl unmount -b /dev/sdX1
+udisksctl mount -b /dev/sdX1 -o shortname=winnt
+cp .pio/build/ac_tri_f1/firmware.bin /run/media/$USER/<card>/firmware.bin
+sync
+udisksctl unmount -b /dev/sdX1
+```
+
+If `firmware.bin` is already on the card, delete it before copying the new one. Overwriting it keeps the old entry.
+
+To make this the default for one card, add its UUID (from `lsblk -no UUID /dev/sdX1`) to `/etc/udisks2/mount_options.conf`:
+
+```ini
+[/dev/disk/by-uuid/XXXX-XXXX]
+vfat_defaults=uid=$UID,gid=$GID,shortname=winnt,utf8=1,showexec,flush
+```
 
 ## OctoPrint setup
 
