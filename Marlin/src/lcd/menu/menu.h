@@ -28,7 +28,7 @@
 #include "limits.h"
 
 #define DEVICE_NAME             "AC Kobra 2 Neo (OctoPrint UI)"
-#define FIRMWARE_VER            "V1.6.0.0"
+#define FIRMWARE_VER            "V1.6.1.0"
 #define BUILD_VOLUME            "220*220*250 (mm)"
 #define TECH_SUPPORT            "https://www.anycubic.com"
 
