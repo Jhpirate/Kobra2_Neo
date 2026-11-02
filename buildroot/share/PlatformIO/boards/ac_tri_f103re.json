@@ -16,7 +16,7 @@
     ],
     "mcu": "stm32f103ret6",
     "product_line": "STM32F103xE",
-    "variant": "Generic_F103Rx"
+    "variant": "AC_TRI_F103RE"
   },
   "debug": {
     "jlink_device": "STM32F103RE",
@@ -29,7 +29,7 @@
     "libopencm3",
     "stm32cube"
   ],
-  "name": "Anycubic Trigorilla AC_TRI_F1 (STM32F103RET6)",
+  "name": "STM32F103RE (64k RAM. 512k Flash)",
   "upload": {
     "disable_flushing": false,
     "maximum_ram_size": 65536,
@@ -37,7 +37,6 @@
     "protocol": "jlink",
     "protocols": [
       "jlink",
-      "cmsis-dap",
       "stlink",
       "blackmagic",
       "serial",
@@ -48,5 +47,5 @@
     "wait_for_upload_port": false
   },
   "url": "http://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32f1-series/stm32f103/stm32f103re.html",
-  "vendor": "Anycubic"
+  "vendor": "Generic"
 }

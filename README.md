@@ -109,6 +109,7 @@ Without `M73` the print runs normally, but the progress bar stays empty.
 | [`Marlin/src/gcode/stats/M75-M78.cpp`](Marlin/src/gcode/stats/M75-M78.cpp) | `M75`/`M76`/`M77` hooks for host prints |
 | [`Marlin/src/HAL/STM32/autoGetZoffset.h`](Marlin/src/HAL/STM32/autoGetZoffset.h) | Auto Z offset settings, including the purge option |
 | [`ini/stm32f1.ini`](ini/stm32f1.ini) | `ac_tri_f1` build environment |
+| [`buildroot/share/PlatformIO/variants/AC_TRI_F103RE`](buildroot/share/PlatformIO/variants/AC_TRI_F103RE) | Anycubic board variant: pin map, linker script at `0x9000`, stack and heap sizes. It's in the repo, so builds don't need it installed in PlatformIO. |
 
 ## Credits
 
