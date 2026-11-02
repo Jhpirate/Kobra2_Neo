@@ -588,6 +588,7 @@ namespace Language_en {
   LSTR MSG_TOOL_MIGRATION_SWAP            = _UxGT("Migrate to *");
   LSTR MSG_FILAMENTCHANGE                 = _UxGT("Filament");
   LSTR MSG_FILAMENTCHANGE_E               = _UxGT("Change * Filament");
+  LSTR MSG_CHANGE_FILAMENT                = _UxGT("Change Filament");
   LSTR MSG_FILAMENTLOAD                   = _UxGT("Extrude");
   LSTR MSG_FILAMENTLOAD_E                 = _UxGT("Load * Filament");
   LSTR MSG_FILAMENTUNLOAD                 = _UxGT("Retract");

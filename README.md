@@ -22,7 +22,7 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
   - **Resume** after a pause started in OctoPrint asks OctoPrint to resume (`//action:resume`).
   - **Stop** tells OctoPrint to cancel (`//action:cancel`), clears queued commands, stops the motors and turns off the heaters.
 - **Progress bar from `M73 P<percent>`.** The percentage can come from the slicer or an OctoPrint plugin.
-- **Settings menu while printing.** Stock firmware locks the Settings button during a print. Now it opens, with the items that would move or reset the printer hidden: Move axis, Disable steppers, Filament change, Bed leveling, Calibration and Restore defaults.
+- **Settings menu while printing.** Stock firmware locks the Settings button during a print. Now it opens, with the items that would move or reset the printer hidden: Move axis, Disable steppers, Filament (load/unload), Bed leveling, Calibration and Restore defaults. In their place is **Change Filament**, which runs `M600`: it parks the head, unloads, waits for new filament, purges and continues. It also works during OctoPrint prints, because OctoPrint is told the print is paused.
 - **Cancel single objects (`M486`).** Skip a failed part and keep printing the rest. Use OctoPrint or a slicer that labels objects, such as OrcaSlicer. There's no menu for this on the printer.
 - **Optional filament purge before nozzle (Z offset) calibration.** Off by default. Set `CALIBRATION_FILAMENT_PURGE` to `1` to turn it on.
 

@@ -418,6 +418,7 @@ namespace Language_zh_CN {
   LSTR MSG_TOOL_MIGRATION_END             = _UxGT("上一个挤出机");
   LSTR MSG_TOOL_MIGRATION_SWAP            = _UxGT("迁移至 *");
   LSTR MSG_FILAMENTCHANGE                 = _UxGT("换丝");     // "Change filament"
+  LSTR MSG_CHANGE_FILAMENT                = _UxGT("换丝");     // "Change filament" (M600 during a print)
   LSTR MSG_FILAMENTCHANGE_E               = _UxGT("更换丝料 *");     // "Change filament"
   LSTR MSG_FILAMENTLOAD                   = _UxGT("进丝");     // "Load filament"
   LSTR MSG_FILAMENTLOAD_E                 = _UxGT("装载丝料 *");     // "Load filament"

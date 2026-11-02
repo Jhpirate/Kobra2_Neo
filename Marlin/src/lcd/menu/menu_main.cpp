@@ -366,6 +366,12 @@ void menu_main() {
     //
     SUBMENU(MSG_MODULE_CALIBRATION, menu_calibration);
   }
+  else if (!did_pause_print) {
+    //
+    // Change filament mid-print: M600 parks, unloads, waits for new filament, then resumes
+    //
+    ACTION_ITEM(MSG_CHANGE_FILAMENT, []{ queue.inject(F("M600")); ui.return_to_status(); });
+  }
   //
   // More Configuration
   //
