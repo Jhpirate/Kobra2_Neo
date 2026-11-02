@@ -24,6 +24,7 @@
 #define LOAD_SPEED			8	   	//load speed
 #define UNLOAD_LENGTH 		50		//unload length	
 #define UNLOAD_SPEED  		20		//unload speed	
+#define CALIBRATION_FILAMENT_PURGE 0		//1 = load/unload (purge) filament before nozzle calibration
 
 #define RUN_DOWN_MM       -1.2      
 #define MOVE_XY_MM        10
