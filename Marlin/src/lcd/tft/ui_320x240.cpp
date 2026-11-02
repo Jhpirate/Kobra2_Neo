@@ -393,7 +393,7 @@ void MarlinUI::draw_status_screen() {
 
   if(ui.start_print_status){ //
   
-    const char * const longest = host_print_active ? "OctoPrint" : card.longest_filename();
+    const char * const longest = host_print_active ? host_print_name : card.longest_filename();
     char filenamebuffer[strlen(longest) + 2];
     filenamebuffer[0] = ' ';
     strcpy(filenamebuffer + 1, longest);

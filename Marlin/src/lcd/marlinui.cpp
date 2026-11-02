@@ -75,6 +75,7 @@ float MarlinUI::temp_probe_zoffset;
 bool MarlinUI::print_task_done = false;
 bool MarlinUI::host_print_active = false;
 bool MarlinUI::host_abort_pending = false;
+char MarlinUI::host_print_name[64] = "OctoPrint";
 bool MarlinUI::fresh_flag = false;
 bool MarlinUI::real_duration_state;
 
@@ -1816,9 +1817,20 @@ void MarlinUI::init() {
   }
 
   // M75: A host (OctoPrint) print is starting, show the printing screen like an SD print
-  void MarlinUI::host_print_start() {
+  void MarlinUI::host_print_start(const char * const name/*=nullptr*/) {
     if (host_print_active || IS_SD_PRINTING() || IS_SD_PAUSED()) return;
     host_print_active = true;
+
+    // Title: the file name without ".gcode", or "OctoPrint" if none was given
+    if (name && *name) {
+      strncpy(host_print_name, name, sizeof(host_print_name) - 1);
+      host_print_name[sizeof(host_print_name) - 1] = '\0';
+      const size_t len = strlen(host_print_name);
+      if (len > 6 && !strcasecmp(host_print_name + len - 6, ".gcode")) host_print_name[len - 6] = '\0';
+    }
+    else
+      strcpy(host_print_name, "OctoPrint");
+
     feedrate_percentage = 100;
     runout.filament_ran_out = false;
     TERN_(SET_PROGRESS_PERCENT, set_progress(0));

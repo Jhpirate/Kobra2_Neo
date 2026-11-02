@@ -16,13 +16,14 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
 
 ### New features
 
-- **OctoPrint printing screen.** `M75` opens the same print screen an SD print uses, with "OctoPrint" as the title, the elapsed time, a progress bar, and pause and stop buttons. `M77` shows "Print finished". `M77 C` (cancel) goes back to the home screen.
+- **OctoPrint printing screen.** `M75` opens the same print screen an SD print uses, with the elapsed time, a progress bar, and pause and stop buttons. The title is the file name from `M75 <name>` (without `.gcode`), or "OctoPrint" if no name is given. `M77` shows "Print finished". `M77 C` (cancel) goes back to the home screen.
 - **Pause, resume and stop from the printer during OctoPrint prints.**
   - **Pause** parks the head and tells OctoPrint the print is paused (`//action:paused`).
   - **Resume** after a pause started in OctoPrint asks OctoPrint to resume (`//action:resume`).
   - **Stop** tells OctoPrint to cancel (`//action:cancel`), clears queued commands, stops the motors and turns off the heaters.
 - **Progress bar from `M73 P<percent>`.** The percentage can come from the slicer or an OctoPrint plugin.
 - **Settings menu while printing.** Stock firmware locks the Settings button during a print. Now it opens, with the items that would move or reset the printer hidden: Move axis, Disable steppers, Filament change, Bed leveling, Calibration and Restore defaults.
+- **Cancel single objects (`M486`).** Skip a failed part and keep printing the rest. Use OctoPrint or a slicer that labels objects, such as OrcaSlicer. There's no menu for this on the printer.
 - **Optional filament purge before nozzle (Z offset) calibration.** Off by default. Set `CALIBRATION_FILAMENT_PURGE` to `1` to turn it on.
 
 ### Adjusted behavior
@@ -30,6 +31,8 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
 - **USB/serial**
   - MeatPack compression on serial port 1
   - Command buffer raised from 4 to 8, and a 4-byte TX buffer
+  - Planner buffer raised from 16 to 32 moves, so OctoPrint can stream many short segments without pauses
+  - Emergency parser on: `M108` (cancel heat-up wait), `M112` and `M410` act immediately instead of waiting in the queue
 - **Host communication**
   - Host action commands and prompts on
   - `M575` changes the baud rate without reflashing (default `115200`)
@@ -44,7 +47,8 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
 |---|---|
 | [`Marlin/src/lcd/menu/menu.h`](Marlin/src/lcd/menu/menu.h) | **Version number and device name** (`FIRMWARE_VER`, `DEVICE_NAME`) shown in the printer's info screen |
 | [`Marlin/Configuration.h`](Marlin/Configuration.h) | `M575` baud rate change |
-| [`Marlin/Configuration_adv.h`](Marlin/Configuration_adv.h) | Buffers, MeatPack, host actions and prompts, `M73` |
+| [`Marlin/Configuration_adv.h`](Marlin/Configuration_adv.h) | Buffers, MeatPack, host actions and prompts, `M73`, emergency parser, `M486` |
+| [`Marlin/src/gcode/parser.cpp`](Marlin/src/gcode/parser.cpp) | Text after `M75` read as one name, so names with spaces or capital letters come through whole |
 | [`Marlin/src/lcd/marlinui.cpp`](Marlin/src/lcd/marlinui.cpp) / [`.h`](Marlin/src/lcd/marlinui.h) | Host print start and end, pause, resume and stop buttons |
 | [`Marlin/src/MarlinCore.cpp`](Marlin/src/MarlinCore.cpp) | Cleanup when an OctoPrint print is stopped from the printer |
 | [`Marlin/src/gcode/stats/M75-M78.cpp`](Marlin/src/gcode/stats/M75-M78.cpp) | `M75` / `M77` / `M77 C` connected to the print screen |
@@ -116,11 +120,13 @@ Slicers usually don't send `M75`/`M77`, so add them in **OctoPrint → Settings 
 
 | Script | Content |
 |---|---|
-| Before print job starts | `M75` |
+| Before print job starts | `M75 {{ event.name }}` |
 | After print job completes | `M77` |
 | After print job is cancelled | `M77 C` |
 | After print job is paused | `M76` |
 | Before print job is resumed | `M75` |
+
+`{{ event.name }}` puts the file name on the print screen. If OctoPrint leaves it empty, the screen shows "OctoPrint".
 
 **Progress bar:** turn on `M73` output in your slicer's printer profile, or use an OctoPrint plugin that sends `M73` (for example *M73 Progress*). Use one or the other, not both. Without `M73` the bar stays empty.
 

@@ -35,9 +35,11 @@
 
 /**
  * M75: Start print timer
+ *
+ *  string = Name to show on the print screen during a host print (e.g. M75 {{ event.name }})
  */
 void GcodeSuite::M75() {
-  ui.host_print_start();
+  ui.host_print_start(parser.string_arg);
   startOrResumeJob();
   #if ENABLED(DWIN_LCD_PROUI)
     if (!IS_SD_PRINTING()) DWIN_Print_Header(parser.string_arg && parser.string_arg[0] ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));

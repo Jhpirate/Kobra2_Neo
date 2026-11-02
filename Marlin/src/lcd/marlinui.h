@@ -822,7 +822,8 @@ public:
   static bool print_task_done;
   static bool host_print_active;   // Host (OctoPrint) print started with M75, ended with M77
   static bool host_abort_pending;  // Host print stopped from the LCD, cleanup runs in loop()
-  static void host_print_start();
+  static char host_print_name[64]; // Shown as the print screen title, "OctoPrint" when M75 has no name
+  static void host_print_start(const char * const name=nullptr);
   static void host_print_end(const bool completed);
 private:
   #if HAS_SCREEN_TIMEOUT
