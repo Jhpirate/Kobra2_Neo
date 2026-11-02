@@ -38,7 +38,7 @@ Custom Marlin firmware for the **Anycubic Kobra 2 Neo**, built from Anycubic's r
   - `M575` changes the baud rate without reflashing (default `115200`)
   - The printer tells OctoPrint when it pauses or resumes on its own (LCD pause, `M600`)
 - **Heater icons follow temperature.** Blue when cold, yellow once 40% of the way to the target, orange-red within the last 10%. A heater that's switched off shows yellow while it's still above 50 °C. The speed and Z offset icons also have their own colors.
-- **`M117` only restarts the print timer during a print.** Anycubic's slicer output uses `M117` to mark when the print actually starts. Stock firmware also restarted the timer when idle, which made the printer look busy.
+- **`M117` restarts the print timer only once per print.** Anycubic's slicer output uses `M117` to mark when the print actually starts (after heating). Stock firmware restarted the timer on every `M117`, even when idle. That made the printer look busy, and it reset the timer whenever an OctoPrint plugin sent per-layer status messages.
 - **`M73 R` (remaining time) turned off.** The screen has no space to show it.
 
 ### Main files edited

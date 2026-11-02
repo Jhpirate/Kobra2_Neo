@@ -63,6 +63,7 @@ inline void sdcard_start_selected_file() {
   autoProbe.up_error_count = 0;
   feedrate_percentage = 100;
   ui.real_duration_state = false;
+  ui.print_start_marked = false;
   runout.filament_ran_out = false;//Clear status each time you print
   ui.start_print_status = true;
   card.openAndPrintFile(card.filename);

@@ -78,6 +78,7 @@ bool MarlinUI::host_abort_pending = false;
 char MarlinUI::host_print_name[64] = "OctoPrint";
 bool MarlinUI::fresh_flag = false;
 bool MarlinUI::real_duration_state;
+bool MarlinUI::print_start_marked = false;
 
 void MarlinUI::fan_callbackFunc(){
 	if(model_fan_enabled)
@@ -1820,6 +1821,7 @@ void MarlinUI::init() {
   void MarlinUI::host_print_start(const char * const name/*=nullptr*/) {
     if (host_print_active || IS_SD_PRINTING() || IS_SD_PAUSED()) return;
     host_print_active = true;
+    print_start_marked = false;
 
     // Title: the file name without ".gcode", or "OctoPrint" if none was given
     if (name && *name) {

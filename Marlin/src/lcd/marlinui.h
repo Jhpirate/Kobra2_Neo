@@ -219,6 +219,7 @@ public:
   static LCDLeveingState lcdLeveingstate;
   static float temp_probe_zoffset;
   static bool real_duration_state;
+  static bool print_start_marked;  // M117 already restarted the timer for this print
   static void fan_callbackFunc();
   static void previous_callbackFunc();
   static void pausu_befor_event();

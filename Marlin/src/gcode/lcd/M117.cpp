@@ -38,8 +38,10 @@ void GcodeSuite::M117() {
     ui.reset_status();
 
   // Anycubic slicer output uses M117 to mark the real print start (after heating).
-  // Only restart the timer during a print, so an idle M117 doesn't make the printer look busy.
-  if (ui.start_print_status && !did_pause_print) {
+  // Only restart the timer once per print, so an idle M117 doesn't make the printer look busy
+  // and later status messages (e.g. per-layer M117 from OctoPrint plugins) don't reset it.
+  if (ui.start_print_status && !did_pause_print && !ui.print_start_marked) {
+    ui.print_start_marked = true;
     ui.real_duration();
     print_job_timer.reset();
     print_job_timer.start();
