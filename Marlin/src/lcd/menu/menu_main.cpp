@@ -331,36 +331,41 @@ void menu_main() {
   //   #endif
   // ;
 
+  // Printing (SD or host) or paused: hide items that would move or reset the printer
+  const bool printing = ui.start_print_status || did_pause_print;
+
   START_MENU();
   BACK_ITEM(MSG_INFO_SCREEN);
 
-  //
-  // Disable Steppers
-  //
-  GCODES_ITEM(MSG_DISABLE_STEPPERS, F("M84"));
+  if (!printing) {
+    //
+    // Disable Steppers
+    //
+    GCODES_ITEM(MSG_DISABLE_STEPPERS, F("M84"));
 
-	//
-  // Move XYZ Axis
-  //
-  if (TERN1(DELTA, all_axes_homed())){
-      SUBMENU(MSG_MOVE_AXIS, menu_move);
+  	//
+    // Move XYZ Axis
+    //
+    if (TERN1(DELTA, all_axes_homed())){
+        SUBMENU(MSG_MOVE_AXIS, menu_move);
+    }
+
+    //
+    // Move E Axis
+    //
+   SUBMENU(MSG_FILAMENTCHANGE,filament_change);
+
+    //
+    // Auto Leving
+    //
+
+    SUBMENU(MSG_LEVEL_BED, lcd_level_task);
+
+    //
+    // module calibration
+    //
+    SUBMENU(MSG_MODULE_CALIBRATION, menu_calibration);
   }
-
-  //
-  // Move E Axis
-  //
- SUBMENU(MSG_FILAMENTCHANGE,filament_change);
-
-  //
-  // Auto Leving
-  //
-  
-  SUBMENU(MSG_LEVEL_BED, lcd_level_task);
-
-  //
-  // module calibration
-  //
-  SUBMENU(MSG_MODULE_CALIBRATION, menu_calibration);
   //
   // More Configuration
   //

@@ -843,21 +843,8 @@ void MarlinUI::init() {
         encoderPosition = 0;
     }
     else if(int16_t(encoderPosition)<= -1){
-  
-	  	if(!busy&&!Paused)// 
-	  	{
-			if(seclect ==1 ) 	
-				seclect = 1;
-			else
-				seclect--;
-	  	}
-		else
-		{
-			if(seclect == 2 ) 	
-				seclect = 2;
-			else
-				seclect--;
-		}
+      // Settings (1) is reachable while printing too, menu_main hides unsafe items
+      if(seclect > 1) seclect--;
       encoderPosition = 0;
     }
     draw_status_screen();

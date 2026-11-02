@@ -610,7 +610,7 @@ void menu_configuration() {
   
   //SUBMENU(MSG_ADVANCED_SETTINGS, menu_advanced_settings);
 
-   SUBMENU(MSG_RESTORE_DEFAULTS, Reset_setting);
+   if (!ui.start_print_status && !did_pause_print) SUBMENU(MSG_RESTORE_DEFAULTS, Reset_setting);
 //  if (!busy) SUBMENU(MSG_RESTORE_DEFAULTS, []{
 //		MenuItem_confirm::select_screen(
 //		GET_TEXT_F(MSG_RESTORE_DEFAULTS), GET_TEXT_F(MSG_BACK),
