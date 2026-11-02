@@ -1828,6 +1828,9 @@ void MarlinUI::init() {
       start_print_status = true;
       clear_all = true;
       return_to_status();
+      // Already on the status screen, so goto_screen didn't clear the home tiles
+      clear_lcd();
+      refresh(LCDVIEW_CALL_REDRAW_NEXT);
       reset_status();
       clear_all = false;
       seclect = 4;
@@ -1848,6 +1851,9 @@ void MarlinUI::init() {
         clear_all = start_print_status = false;
         seclect = 2;
         return_to_status();
+        // Clear the print status elements before the home tiles are drawn
+        clear_lcd();
+        refresh(LCDVIEW_CALL_REDRAW_NEXT);
       }
     #endif
   }
