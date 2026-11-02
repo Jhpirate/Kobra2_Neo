@@ -37,6 +37,7 @@
  * M75: Start print timer
  */
 void GcodeSuite::M75() {
+  ui.host_print_start();
   startOrResumeJob();
   #if ENABLED(DWIN_LCD_PROUI)
     if (!IS_SD_PRINTING()) DWIN_Print_Header(parser.string_arg && parser.string_arg[0] ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));
@@ -53,9 +54,12 @@ void GcodeSuite::M76() {
 
 /**
  * M77: Stop print timer
+ *
+ *  C = Host print was cancelled, return to the home screen instead of showing "Print finished"
  */
 void GcodeSuite::M77() {
   print_job_timer.stop();
+  ui.host_print_end(!parser.seen_test('C'));
 }
 
 #if ENABLED(PRINTCOUNTER)

@@ -377,7 +377,7 @@ void MarlinUI::draw_status_screen() {
 
   if(ui.start_print_status){ //
   
-    char * const longest = card.longest_filename();
+    const char * const longest = host_print_active ? "OctoPrint" : card.longest_filename();
     char filenamebuffer[strlen(longest) + 2];
     filenamebuffer[0] = ' ';
     strcpy(filenamebuffer + 1, longest);
@@ -400,7 +400,7 @@ void MarlinUI::draw_status_screen() {
 
     // print duration
     char buffer[14] ={0};
-    if((IS_SD_PRINTING() || did_pause_print)&& get_real_duration() ){
+    if((IS_SD_PRINTING() || did_pause_print || host_print_active)&& get_real_duration() ){
       duration_t elapsed = print_job_timer.duration();
       elapsed.toDigital(buffer);
     }
@@ -420,7 +420,7 @@ void MarlinUI::draw_status_screen() {
     tft.add_rectangle(0, 0, 34, 34, COLOR_AXIS_HOMED);
   }
 
-  if(wait_for_user){ //pause and not print
+  if(wait_for_user || (host_print_active && print_job_timer.isPaused())){ //pause and not print
 	  tft.add_image(1, 1, imgStartPrint,COLOR_GREEN );
   }
   else //staring

@@ -820,6 +820,10 @@ public:
   static uint16_t seclect;
   static bool start_print_status;
   static bool print_task_done;
+  static bool host_print_active;   // Host (OctoPrint) print started with M75, ended with M77
+  static bool host_abort_pending;  // Host print stopped from the LCD, cleanup runs in loop()
+  static void host_print_start();
+  static void host_print_end(const bool completed);
 private:
   #if HAS_SCREEN_TIMEOUT
     static millis_t return_to_status_ms;

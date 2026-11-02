@@ -73,6 +73,8 @@ bool MarlinUI::clear_all = 0;
 bool MarlinUI::module_calibration_flag = false;
 float MarlinUI::temp_probe_zoffset;
 bool MarlinUI::print_task_done = false;
+bool MarlinUI::host_print_active = false;
+bool MarlinUI::host_abort_pending = false;
 bool MarlinUI::fresh_flag = false;
 bool MarlinUI::real_duration_state;
 
@@ -712,10 +714,14 @@ void MarlinUI::init() {
 				  if(busy || Paused )
 				  {
 
-					  if(!Paused && IS_SD_PRINTING()){
+					  if(!Paused && (IS_SD_PRINTING() || host_print_active)){
 						return goto_screen(tft_pause_print);
 					  }
-
+					  else if(host_print_active && !did_pause_print)
+					  {
+						  // Paused from OctoPrint (M76), so ask the host to resume
+						  TERN_(HOST_ACTION_COMMANDS, hostui.action(F("resume")));
+					  }
 					  else
 					  {
 						 if(READ(FIL_RUNOUT_PIN) != runout.get_state_original()){
@@ -738,7 +744,7 @@ void MarlinUI::init() {
 
 			    break;
 		  	case 3:
-				  if((busy || Paused) && (IS_SD_PRINTING() || did_pause_print))
+				  if((busy || Paused) && (IS_SD_PRINTING() || did_pause_print || host_print_active))
 				  {
 
 					  return goto_screen(tft_stop_print);
@@ -1802,8 +1808,15 @@ void MarlinUI::init() {
       did_pause_print = 0;
   
       runout.filament_ran_out = false;
-      ui.clear_all = ui.start_print_status = false;  
+      ui.clear_all = ui.start_print_status = false;
     #endif
+    if (host_print_active) {
+      // Tell the host to stop streaming, then clean up like an SD abort
+      host_print_active = false;
+      host_abort_pending = true;
+      TERN_(HOST_ACTION_COMMANDS, hostui.action(F("cancel")));
+      TERN_(SET_PROGRESS_PERCENT, set_progress(0));
+    }
     #ifdef ACTION_ON_CANCEL
       hostui.cancel();
     #endif
@@ -1813,6 +1826,43 @@ void MarlinUI::init() {
 
     TERN_(HAS_MARLINUI_MENU, return_to_status());
     TERN_(DWIN_LCD_PROUI, HMI_flag.abort_flag = true);
+  }
+
+  // M75: A host (OctoPrint) print is starting, show the printing screen like an SD print
+  void MarlinUI::host_print_start() {
+    if (host_print_active || IS_SD_PRINTING() || IS_SD_PAUSED()) return;
+    host_print_active = true;
+    feedrate_percentage = 100;
+    runout.filament_ran_out = false;
+    TERN_(SET_PROGRESS_PERCENT, set_progress(0));
+    real_duration();
+    #if HAS_MARLINUI_MENU
+      confirm_windown_enabled = print_task_done = false;
+      start_print_status = true;
+      clear_all = true;
+      return_to_status();
+      reset_status();
+      clear_all = false;
+      seclect = 4;
+    #endif
+  }
+
+  // M77: A host print is over. Show the finish screen, or go straight home if it was cancelled.
+  void MarlinUI::host_print_end(const bool completed) {
+    if (!host_print_active) return;
+    host_print_active = false;
+    TERN_(SET_PROGRESS_PERCENT, set_progress(0));
+    #if HAS_MARLINUI_MENU
+      if (completed) {
+        print_task_done = true;
+        goto_screen(printinf_finish);
+      }
+      else {
+        clear_all = start_print_status = false;
+        seclect = 2;
+        return_to_status();
+      }
+    #endif
   }
 
   #if BOTH(HAS_MARLINUI_MENU, PSU_CONTROL)

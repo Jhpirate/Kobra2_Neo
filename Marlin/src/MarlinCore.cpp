@@ -390,6 +390,29 @@ void startOrResumeJob() {
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }
 
+  // Stop a host (OctoPrint) print the same way abortSDPrinting stops an SD print
+  inline void abortHostPrinting() {
+    ui.host_abort_pending = false;
+    wait_for_user = wait_for_heatup = false;
+
+    // Drop queued host commands, sending "ok" for each so the host doesn't stall waiting
+    while (queue.ring_buffer.occupied()) {
+      queue.ring_buffer.ok_to_send();
+      queue.ring_buffer.advance_pos(queue.ring_buffer.index_r, -1);
+    }
+    quickstop_stepper();
+
+    print_job_timer.abort();
+
+    IF_DISABLED(SD_ABORT_NO_COOLDOWN, thermalManager.disable_all_heaters());
+
+    TERN(HAS_CUTTER, cutter.kill(), thermalManager.zero_fan_speeds());
+
+    #ifdef EVENT_GCODE_SD_ABORT
+      queue.inject(F(EVENT_GCODE_SD_ABORT));
+    #endif
+  }
+
   inline void finishSDPrinting() {
     if (queue.enqueue_one(F("M1001"))) {  // Keep trying until it gets queued
       marlin_state = MF_RUNNING;          // Signal to stop trying
@@ -1695,6 +1718,7 @@ void loop() {
 
     #if ENABLED(SDSUPPORT)
       if (card.flag.abort_sd_printing) abortSDPrinting();
+      if (ui.host_abort_pending) abortHostPrinting();
       if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
     #endif
 
