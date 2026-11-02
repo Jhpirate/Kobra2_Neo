@@ -177,6 +177,22 @@ void MarlinUI::draw_kill_screen() {
   tft.queue.sync();
 }
 
+#define COLOR_ICON_COLD     COLOR_LIGHT_BLUE
+#define COLOR_ICON_WARMING  COLOR_YELLOW
+#define COLOR_ICON_HOT      RGB(0xFF, 0x45, 0x00) // Orange-red
+#define COLOR_ICON_SPEED    COLOR_VIVID_GREEN
+#define COLOR_ICON_ZOFFSET  RGB(0xB0, 0x7C, 0xFF) // Violet
+
+// Heater icon color: blue when cold, yellow while heating, orange-red near/at target
+static uint16_t heater_icon_color(const celsius_t current, const celsius_t target) {
+  constexpr celsius_t ambient = 25;
+  if (target <= ambient) return current >= 50 ? COLOR_ICON_WARMING : COLOR_ICON_COLD; // Off: warn while still hot
+  const int32_t done = current - ambient, span = target - ambient;
+  if (done * 10 >= span * 9) return COLOR_ICON_HOT;   // Within the last 10%
+  if (done * 10 >= span * 4) return COLOR_ICON_WARMING;
+  return COLOR_ICON_COLD;
+}
+
 void draw_heater_status(uint16_t x, uint16_t y, const int8_t Heater,bool flag) {
   MarlinImage image = imgHotEnd;
   uint16_t Color;
@@ -240,7 +256,7 @@ void draw_heater_status(uint16_t x, uint16_t y, const int8_t Heater,bool flag) {
     }
   #endif
 
-  tft.add_image(31, 1, image, COLOR_WHITE);
+  tft.add_image(31, 1, image, heater_icon_color(currentTemperature, targetTemperature));
   char str_buf[16];
   sprintf(str_buf,"%u/%u",(uint16_t)currentTemperature, (uint16_t)targetTemperature);
   
@@ -493,7 +509,7 @@ void MarlinUI::draw_status_screen() {
   {
     tft.add_rectangle(0, 0, 92, 67, COLOR_AXIS_HOMED);
   }
-  tft.add_image(28, 7, imgFeedRate, COLOR_WHITE);
+  tft.add_image(28, 7, imgFeedRate, COLOR_ICON_SPEED);
   
   tft_string.set(i16tostr3rj(feedrate_percentage));
   tft_string.add('%');
@@ -507,7 +523,7 @@ void MarlinUI::draw_status_screen() {
   {
     tft.add_rectangle(0, 0, 92, 67, COLOR_AXIS_HOMED);
   }
-  tft.add_image(28, 7, imgLeveling, COLOR_WHITE);
+  tft.add_image(28, 7, imgLeveling, COLOR_ICON_ZOFFSET);
   
   char str_buf[10];
   sprintf(str_buf,"%.2f",1.2);
